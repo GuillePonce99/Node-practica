@@ -7,17 +7,24 @@ import productRouter from "./routes/products.router.js"
 import cartRouter from "./routes/carts.router.js"
 import socket from "./socket.js"
 import filesRouter from "./routes/files.router.js"
+import mongoose from "mongoose"
+import * as dotenv from "dotenv"
 
+dotenv.config()
 const app = express()
-const port = 8080
+const port = process.env.PORT
 
-const httpServer = app.listen(port, () => {
-    console.log(`Servidor corriendo en puerto ${port}`);
+// DATABASE CONECTION
+
+const MONGO_URI = process.env.MONGO_URI
+mongoose.connect(MONGO_URI).then(() => console.log("DB is connected")).catch((error) => {
+    if (error) {
+        console.log(error);
+        process.exit()
+    }
 })
 
 //config
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"))
@@ -29,15 +36,14 @@ app.use("/", viewsRouter)
 //HANDLEBARS CONFIG
 
 app.engine("handlebars", handlebars.engine())
-
 app.set("views", __dirname + "/views")
-
 app.set("view engine", "handlebars")
 
 //Socket io
 
+const httpServer = app.listen(port, () => {
+    console.log(`Servidor corriendo en puerto ${port}`);
+})
+
 const io = new Server(httpServer)
-
 socket(io)
-
-

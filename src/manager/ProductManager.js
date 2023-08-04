@@ -9,18 +9,21 @@ export class ProductManager {
 
     async addProduct(productoBody) {
         this.products = await this.getProducts();
-        const validarCode = this.products.some((e) => e.code === productoBody.code)
-        if (validarCode) {
+        const codeRepetido = this.products.some((e) => e.code === productoBody.code)
+        if (codeRepetido) {
             return false
+
             /* 
             let error = new Error(`Ya existe el producto con el CODE: ${productoBody.code}`);
             error.statusCode = 400
             throw error;
             */
+
         } else {
             this.products.push({ id: this.products.length ? this.products[this.products.length - 1].id + 1 : 1, ...productoBody })
             await utils.write(this.path, this.products);
         }
+
     };
 
 
@@ -57,7 +60,7 @@ export class ProductManager {
             error.statusCode = 400
             throw error;
             */
-        }else {
+        } else {
             this.products = this.products.filter(e => e.id !== id)
             await utils.write(this.path, this.products)
         }

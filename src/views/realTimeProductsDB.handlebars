@@ -3,13 +3,13 @@
         <div class="titulos">
             <h1>PRODUCTOS SOCKET.IO</h1>
             <ul>
-                <li>ID</li>
+                <li>Code</li>
                 <li>Nombre</li>
                 <li>Descripcion</li>
                 <li>Precio</li>
                 <li>Stock</li>
                 <li>Categoria</li>
-                <li>Code</li>
+
             </ul>
         </div>
         <div id="form-real-time"></div>
@@ -23,8 +23,8 @@
                 <input placeholder="Nombre" type="text" id="producto_title">
                 <input placeholder="Descripcion" type="text" id="producto_description">
                 <input placeholder="Codigo" type="text" id="producto_code">
-                <input placeholder="Precio" type="text" id="producto_price">
-                <input placeholder="Stock" type="text" id="producto_stock">
+                <input placeholder="Precio" type="number" id="producto_price">
+                <input placeholder="Stock" type="number" id="producto_stock">
                 <input placeholder="Categoria" type="text" id="producto_category">
                 <button class="btn_add" type="submit" id="boton">CARGAR PRODUCTO</button>
             </div>
@@ -46,4 +46,4 @@
 
 </div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="js/productsFS.js"></script>
+<script src="js/productsDB.js"></script>

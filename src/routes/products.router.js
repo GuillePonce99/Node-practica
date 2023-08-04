@@ -1,99 +1,45 @@
 import { Router } from "express";
-import express from "express"
-import ProductManager from "../manager/ProductManager.js"
+import { updateProductDB, getProductDB, getProductsDB, deleteProductDB, addProductDB, getProducts, getProduct, addProduct, deleteProduct, updateProduct } from "../controllers/product.controller.js";
+
 
 const router = Router()
-let miProducto = new ProductManager.ProductManager("productos.json")
 
-router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
+// ROUTERS DB
 
-router.get("/", async (req, res) => {
-    const productos = await miProducto.getProducts()
-    const { limit } = req.query
-    const response = await productos.slice(0, limit)
-    try {
-        if (limit) {
-            res.json(response)
-        } else {
-            res.json(productos)
-        }
-    }
-    catch (err) {
-        res.status(err.statusCode).send(` ${err}`);
-    }
+router.get("/db/", getProductsDB)
+router.get("/db/:pid", getProductDB)
+router.post("/db/", addProductDB)
+router.delete("/db/:pid", deleteProductDB)
+router.put("/db/:pid", updateProductDB)
+
+
+// ROUTERS FS
+
+router.get("/", getProducts)
+router.get("/:pid", getProduct)
+router.post("/", addProduct)
+router.put("/:pid", updateProduct)
+router.delete("/:pid", deleteProduct)
+
+
+// en caso que no se ingrese un ID en los parametros// FS
+
+router.put("/", (req, res) => {
+    res.json({ status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A MODIFICAR" })
+})
+router.delete("/", (req, res) => {
+    res.json({ status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A ELIMINAR " })
+})
+
+// en caso que no se ingrese un ID en los parametros// DB
+router.put("/db/", (req, res) => {
+    res.json({ status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A MODIFICAR" })
+})
+router.delete("/db/", (req, res) => {
+    res.json({ status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A ELIMINAR " })
 })
 
 
-router.get("/:pid", async (req, res)=> {
-    const { pid } = req.params
-    
-    try{
-        res.send(await miProducto.getProductsById(Number(pid)))
-    }
-    catch (err){
-        res.status(err.statusCode).send(` ${err}`);
-    }
-})
-
-
-router.post("/", async (req, res) => {
-    const {title, description, code, price, status, stock, category, thumbnails } = req.body;
-    
-    if (!title || !description || !code || !price ||  !stock || !category) {
-        return res.status(401).json({ message: "Faltan datos" });
-    }
-    if (!thumbnails) {
-        req.body.thumbnail = "";
-    }
-    if (status === undefined) {
-        req.body.status = true
-    }
-    
-    req.body.code = req.body.code.toString()
-    try {
-        await miProducto.addProduct(req.body)
-        res.json({status: 200, mensaje: "PRODUCTO CARGADO EXITOSAMENTE", data: req.body})
-    }
-    catch (err) {
-        res.status(err.statusCode).send(` ${err}`);
-    }
-})
-
-router.put("/",(req,res)=>{
-    res.json({status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A MODIFICAR"})
-})
-
-router.put("/:pid", async (req, res)=> {
-    const { pid } = req.params
-    if (req.body.code){
-        req.body.code = req.body.code.toString()
-    }
-    
-    try{
-        await miProducto.updateProduct(Number(pid),req.body),
-        res.json({status: 200, mensaje: "PRODUCTO ACTUALIZADO CORRECTAMENTE", data: req.body})
-    }
-    catch (err){
-        res.status(err.statusCode).send(` ${err}`);
-    }
-})
-
-router.delete("/",(req,res)=>{
-    res.json({status: 400, mensaje: "INGRESE EL ID DEL PRODUCTO A ELIMINAR "})
-})
-
-router.delete("/:pid", async (req, res)=> {
-    const { pid } = req.params
-
-    try{
-        await miProducto.deleteProduct(Number(pid)),
-        res.json({status: 200, mensaje: "PRODUCTO ELIMINADO"})
-    }
-    catch (err){
-        res.status(err.statusCode).send(` ${err}`);
-    }
-})
 
 
 export default router
